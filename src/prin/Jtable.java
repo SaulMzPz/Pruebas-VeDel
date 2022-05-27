@@ -1,6 +1,6 @@
 /*
  Muestra que estamos en el paquete "prin"
-Importa las librerias para:
+    Importa las librerias para:
     - la conexion con mysql
     - calendario
     - Icono del frame
@@ -9,16 +9,20 @@ package prin;
 
 import config.Conexion;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Calendar;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
+import java.time.LocalDate;
+import java.util.GregorianCalendar;
 
 /**
- *
- * @author sanle
+    PROGRAMA PRINCIPAL JTABLE
  */
 public class Jtable extends javax.swing.JFrame {
 
@@ -73,7 +77,7 @@ public class Jtable extends javax.swing.JFrame {
 
         jLabel3.setText("Fecha:");
 
-        jdcFecha.setToolTipText("HErramientas");
+        jdcFecha.setToolTipText("");
         jdcFecha.setDateFormatString("yyyy-MM-dd");
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -121,6 +125,11 @@ public class Jtable extends javax.swing.JFrame {
         });
 
         btnEditar.setText("EDITAR");
+        btnEditar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarActionPerformed(evt);
+            }
+        });
 
         btnBorrar.setText("BORRAR");
 
@@ -165,7 +174,7 @@ public class Jtable extends javax.swing.JFrame {
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.Integer.class, java.lang.String.class
+                java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -173,6 +182,11 @@ public class Jtable extends javax.swing.JFrame {
             }
         });
         tblTabla.setRowHeight(40);
+        tblTabla.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblTablaMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblTabla);
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -229,6 +243,70 @@ public class Jtable extends javax.swing.JFrame {
         LimpiarCampos();
     }//GEN-LAST:event_btnAgregarActionPerformed
 
+    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
+        Modificar();
+    }//GEN-LAST:event_btnEditarActionPerformed
+    
+    private void tblTablaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblTablaMouseClicked
+        int fila = tblTabla.getSelectedRow();
+        if(fila==-1){
+            JOptionPane.showMessageDialog(this, "No ha seleccionado ninguna fila");
+        } else{
+            //===========================================================================================================
+            String nom = (String) tblTabla.getValueAt(fila, 0);
+            int eda = Integer.parseInt((String)tblTabla.getValueAt(fila, 1).toString());
+            String fech = (String) tblTabla.getValueAt(fila, 2);
+            
+            
+            //Aqui este try
+            
+            
+            try{
+                SimpleDateFormat fechFormat = new SimpleDateFormat("yyyy-MM-dd");
+                java.util.Date fechF = new SimpleDateFormat("yyyy-MM-dd").parse(fech);
+                jdcFecha.setDate(fechF);
+                
+            }catch (Exception e) {
+                
+            }               
+            
+            
+            
+            txtNombre.setText(nom);
+            txtEdad.setText(""+eda);
+            //jdcFecha.setCalendar(ca1.get();
+            JOptionPane.showMessageDialog(this, fech);
+        } 
+    }//GEN-LAST:event_tblTablaMouseClicked
+//==================================================================================
+    
+    
+    void Modificar(){
+        
+        String nom = txtNombre.getText();
+        String eda = txtEdad.getText();
+        
+        SimpleDateFormat fechFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String fech = fechFormat.format(jdcFecha.getDate());
+       
+        
+        try {
+            if (nom.equals("") || eda.equals("")){
+                JOptionPane.showMessageDialog(this, "No se ha ingresado algun dato");
+                limpiarTabla();
+            } else {
+                String sql = "UPDATE `cliente` SET `nombre`= '"+nom+"',`edad`='"+eda+"',`fecha`='"+fech+"' WHERE `nombre`=''";
+                conet = con1.getConnection();
+                st = conet.createStatement();
+                st.executeUpdate(sql);
+                JOptionPane.showMessageDialog(this, "Cliente"+ nom +" Agregado");
+                limpiarTabla();
+                LimpiarCampos();
+            }
+        }catch (Exception e){
+  
+        }
+    }
     /**
      * @param args the command line arguments
      */
@@ -302,7 +380,7 @@ public class Jtable extends javax.swing.JFrame {
     void Agregar(){
         String nom = txtNombre.getText();
         String eda = txtEdad.getText();
-        try{
+        /*try{
         String dia = Integer.toString(jdcFecha.getCalendar().get(Calendar.DAY_OF_MONTH));
         String mes = Integer.toString(jdcFecha.getCalendar().get(Calendar.MONTH));
         String year = Integer.toString(jdcFecha.getCalendar().get(Calendar.YEAR));
@@ -314,7 +392,10 @@ public class Jtable extends javax.swing.JFrame {
         int mess = (jdcFecha.getCalendar().get(Calendar.MONTH));
         String year = Integer.toString(jdcFecha.getCalendar().get(Calendar.YEAR));
         int mes = mess + 1;
-        String fech = (year +"-"+ mes +"-"+ dia);
+        String fech = (year +"-"+ mes +"-"+ dia);*/
+        SimpleDateFormat fechFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String fech = fechFormat.format(jdcFecha.getDate());
+        
        
         
         try {
