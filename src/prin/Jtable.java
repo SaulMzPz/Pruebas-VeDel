@@ -245,6 +245,7 @@ public class Jtable extends javax.swing.JFrame {
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
         Modificar();
+        Consultar();
     }//GEN-LAST:event_btnEditarActionPerformed
     
     private void tblTablaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblTablaMouseClicked
@@ -257,15 +258,10 @@ public class Jtable extends javax.swing.JFrame {
             int eda = Integer.parseInt((String)tblTabla.getValueAt(fila, 1).toString());
             String fech = (String) tblTabla.getValueAt(fila, 2);
             
-            
-            //Aqui este try
-            
-            
             try{
-                SimpleDateFormat fechFormat = new SimpleDateFormat("yyyy-MM-dd");
+                //SimpleDateFormat fechFormat = new SimpleDateFormat("yyyy-MM-dd");
                 java.util.Date fechF = new SimpleDateFormat("yyyy-MM-dd").parse(fech);
-                jdcFecha.setDate(fechF);
-                
+                jdcFecha.setDate(fechF);    
             }catch (Exception e) {
                 
             }               
@@ -295,7 +291,7 @@ public class Jtable extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "No se ha ingresado algun dato");
                 limpiarTabla();
             } else {
-                String sql = "UPDATE `cliente` SET `nombre`= '"+nom+"',`edad`='"+eda+"',`fecha`='"+fech+"' WHERE `nombre`=''";
+                String sql = "UPDATE `cliente` SET `nombre`= '"+nom+"',`edad`='"+eda+"',`fecha`='"+fech+"' WHERE `fecha`is Null";
                 conet = con1.getConnection();
                 st = conet.createStatement();
                 st.executeUpdate(sql);
