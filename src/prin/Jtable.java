@@ -9,20 +9,16 @@ package prin;
 
 import config.Conexion;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.Calendar;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import java.text.SimpleDateFormat;
-import java.text.ParseException;
-import java.time.LocalDate;
-import java.util.GregorianCalendar;
 
 /**
     PROGRAMA PRINCIPAL JTABLE
+    * ==========================================================================
  */
 public class Jtable extends javax.swing.JFrame {
 
@@ -40,7 +36,6 @@ public class Jtable extends javax.swing.JFrame {
         setIconImage(new ImageIcon(getClass().getResource("/prin/Recurso.png")).getImage());
         
     }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -60,7 +55,7 @@ public class Jtable extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         btnAgregar = new javax.swing.JButton();
         btnEditar = new javax.swing.JButton();
-        btnBorrar = new javax.swing.JButton();
+        btnEliminar = new javax.swing.JButton();
         btnNuevo = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -131,7 +126,12 @@ public class Jtable extends javax.swing.JFrame {
             }
         });
 
-        btnBorrar.setText("BORRAR");
+        btnEliminar.setText("ELIMINAR");
+        btnEliminar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarActionPerformed(evt);
+            }
+        });
 
         btnNuevo.setText("NUEVO");
 
@@ -144,7 +144,7 @@ public class Jtable extends javax.swing.JFrame {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(btnAgregar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnEditar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(btnBorrar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnEliminar, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btnNuevo, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(404, Short.MAX_VALUE))
         );
@@ -156,7 +156,7 @@ public class Jtable extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(btnEditar)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnBorrar)
+                .addComponent(btnEliminar)
                 .addGap(18, 18, 18)
                 .addComponent(btnNuevo)
                 .addGap(0, 0, Short.MAX_VALUE))
@@ -236,30 +236,29 @@ public class Jtable extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+//  HACER CLIC EN BOTON AGREGAR 
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
         Agregar();
         Consultar();
         LimpiarCampos();
     }//GEN-LAST:event_btnAgregarActionPerformed
-
+//  HACER CLIC EN BOTON EDITAR
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
         Modificar();
         Consultar();
     }//GEN-LAST:event_btnEditarActionPerformed
-    
+//  HACER CLIC EN UNA TABLA=====================================================
     private void tblTablaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblTablaMouseClicked
         int fila = tblTabla.getSelectedRow();
         if(fila==-1){
             JOptionPane.showMessageDialog(this, "No ha seleccionado ninguna fila");
+            
         } else{
-            //===========================================================================================================
             String nom = (String) tblTabla.getValueAt(fila, 0);
             int eda = Integer.parseInt((String)tblTabla.getValueAt(fila, 1).toString());
             String fech = (String) tblTabla.getValueAt(fila, 2);
             
             try{
-                //SimpleDateFormat fechFormat = new SimpleDateFormat("yyyy-MM-dd");
                 java.util.Date fechF = new SimpleDateFormat("yyyy-MM-dd").parse(fech);
                 jdcFecha.setDate(fechF);    
             }catch (Exception e) {
@@ -274,9 +273,14 @@ public class Jtable extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, fech);
         } 
     }//GEN-LAST:event_tblTablaMouseClicked
-//==================================================================================
+
+    private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
+        Eliminar();
+        Consultar();
+    }//GEN-LAST:event_btnEliminarActionPerformed
+//==============================================================================
     
-    
+//METODO MODIFICAR =============================================================  
     void Modificar(){
         
         String nom = txtNombre.getText();
@@ -291,7 +295,7 @@ public class Jtable extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "No se ha ingresado algun dato");
                 limpiarTabla();
             } else {
-                String sql = "UPDATE `cliente` SET `nombre`= '"+nom+"',`edad`='"+eda+"',`fecha`='"+fech+"' WHERE `fecha`is Null";
+                String sql = "UPDATE `cliente` SET `nombre`= '"+nom+"',`edad`='"+eda+"',`fecha`='"+fech+"' WHERE `edad`= '33'";
                 conet = con1.getConnection();
                 st = conet.createStatement();
                 st.executeUpdate(sql);
@@ -303,9 +307,8 @@ public class Jtable extends javax.swing.JFrame {
   
         }
     }
-    /**
-     * @param args the command line arguments
-     */
+// 31 LINES NO TOCAR============================================================
+    
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -420,10 +423,28 @@ public class Jtable extends javax.swing.JFrame {
         }
     }
     
+    void Eliminar(){
+        int fila = tblTabla.getSelectedRow();
+        try {
+            if (fila <0){
+                JOptionPane.showMessageDialog(this, " Selecciona un cliente para borrar");
+                limpiarTabla();
+            }else{
+                String sql ="delete from cliente where nombre = 'Saul'";
+                conet = con1.getConnection();
+                st = conet.createStatement();
+                st.executeUpdate(sql);
+                JOptionPane.showMessageDialog(this, "Cliente Eliminado");
+                limpiarTabla();
+            }
+        } catch (Exception e) {
+        }
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregar;
-    private javax.swing.JButton btnBorrar;
     private javax.swing.JButton btnEditar;
+    private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnNuevo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
