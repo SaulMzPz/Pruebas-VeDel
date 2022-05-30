@@ -134,6 +134,11 @@ public class Jtable extends javax.swing.JFrame {
         });
 
         btnNuevo.setText("NUEVO");
+        btnNuevo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNuevoActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -170,15 +175,22 @@ public class Jtable extends javax.swing.JFrame {
 
             },
             new String [] {
-                "nombre", "edad", "fecha"
+                "id", "nombre", "edad", "fecha"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, true, true, true
             };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
             }
         });
         tblTabla.setRowHeight(40);
@@ -246,6 +258,7 @@ public class Jtable extends javax.swing.JFrame {
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
         Modificar();
         Consultar();
+        LimpiarCampos();
     }//GEN-LAST:event_btnEditarActionPerformed
 //  HACER CLIC EN UNA TABLA=====================================================
     private void tblTablaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblTablaMouseClicked
@@ -254,9 +267,10 @@ public class Jtable extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "No ha seleccionado ninguna fila");
             
         } else{
-            String nom = (String) tblTabla.getValueAt(fila, 0);
-            int eda = Integer.parseInt((String)tblTabla.getValueAt(fila, 1).toString());
-            String fech = (String) tblTabla.getValueAt(fila, 2);
+            idc = Integer.parseInt((String)tblTabla.getValueAt(fila, 0).toString());
+            String nom = (String) tblTabla.getValueAt(fila, 1);
+            int eda = Integer.parseInt((String)tblTabla.getValueAt(fila, 2).toString());
+            String fech = (String) tblTabla.getValueAt(fila, 3);
             
             try{
                 java.util.Date fechF = new SimpleDateFormat("yyyy-MM-dd").parse(fech);
@@ -269,15 +283,16 @@ public class Jtable extends javax.swing.JFrame {
             
             txtNombre.setText(nom);
             txtEdad.setText(""+eda);
-            //jdcFecha.setCalendar(ca1.get();
-            JOptionPane.showMessageDialog(this, fech);
         } 
     }//GEN-LAST:event_tblTablaMouseClicked
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
         Eliminar();
-        Consultar();
     }//GEN-LAST:event_btnEliminarActionPerformed
+
+    private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
+        LimpiarCampos();        // TODO add your handling code here:
+    }//GEN-LAST:event_btnNuevoActionPerformed
 //==============================================================================
     
 //METODO MODIFICAR =============================================================  
@@ -295,7 +310,7 @@ public class Jtable extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "No se ha ingresado algun dato");
                 limpiarTabla();
             } else {
-                String sql = "UPDATE `cliente` SET `nombre`= '"+nom+"',`edad`='"+eda+"',`fecha`='"+fech+"' WHERE `edad`= '33'";
+                String sql = "UPDATE `cliente` SET `nombre`= '"+nom+"',`edad`='"+eda+"',`fecha`='"+fech+"' WHERE `idCliente`= '"+idc+"'";
                 conet = con1.getConnection();
                 st = conet.createStatement();
                 st.executeUpdate(sql);
@@ -348,13 +363,13 @@ public class Jtable extends javax.swing.JFrame {
             conet = con1.getConnection();
             st = conet.createStatement();
             rs = st.executeQuery(sql);
-            Object[] row = new Object[3];
+            Object[] row = new Object[4];
             modelo = (DefaultTableModel) tblTabla.getModel();
             while(rs.next()){
-                
-                row [0] = rs.getString("nombre");
-                row [1] = rs.getInt("edad");
-                row [2] = rs.getString("fecha");
+                row [0] = rs.getInt("idCliente");
+                row [1] = rs.getString("nombre");
+                row [2] = rs.getInt("edad");
+                row [3] = rs.getString("fecha");
                 modelo.addRow(row);
                 tblTabla.setModel(modelo);
             }
@@ -368,6 +383,7 @@ public class Jtable extends javax.swing.JFrame {
         txtNombre.setText("");
         txtEdad.setText("");
         jdcFecha.setCalendar(null);
+        txtNombre.requestFocus();
         }catch (Exception e){
         
         }
@@ -379,19 +395,6 @@ public class Jtable extends javax.swing.JFrame {
     void Agregar(){
         String nom = txtNombre.getText();
         String eda = txtEdad.getText();
-        /*try{
-        String dia = Integer.toString(jdcFecha.getCalendar().get(Calendar.DAY_OF_MONTH));
-        String mes = Integer.toString(jdcFecha.getCalendar().get(Calendar.MONTH));
-        String year = Integer.toString(jdcFecha.getCalendar().get(Calendar.YEAR));
-        
-        } catch (Exception e){
-            JOptionPane.showMessageDialog(this, "No se ha ingresado la fecha");
-        }
-        String dia = Integer.toString(jdcFecha.getCalendar().get(Calendar.DAY_OF_MONTH));
-        int mess = (jdcFecha.getCalendar().get(Calendar.MONTH));
-        String year = Integer.toString(jdcFecha.getCalendar().get(Calendar.YEAR));
-        int mes = mess + 1;
-        String fech = (year +"-"+ mes +"-"+ dia);*/
         SimpleDateFormat fechFormat = new SimpleDateFormat("yyyy-MM-dd");
         String fech = fechFormat.format(jdcFecha.getDate());
         
@@ -425,20 +428,31 @@ public class Jtable extends javax.swing.JFrame {
     
     void Eliminar(){
         int fila = tblTabla.getSelectedRow();
-        try {
-            if (fila <0){
-                JOptionPane.showMessageDialog(this, " Selecciona un cliente para borrar");
-                limpiarTabla();
-            }else{
-                String sql ="delete from cliente where nombre = 'Saul'";
-                conet = con1.getConnection();
-                st = conet.createStatement();
-                st.executeUpdate(sql);
-                JOptionPane.showMessageDialog(this, "Cliente Eliminado");
-                limpiarTabla();
+        int jop = JOptionPane.showConfirmDialog(this, "Estas seguro que deseas eliminar este cliente", "Alert",JOptionPane.OK_CANCEL_OPTION);
+        
+        if (jop == 2){
+            return;
+        }else if(jop == 0){
+            try {
+                if (fila < 0){
+                    JOptionPane.showMessageDialog(this, " Selecciona un cliente para borrar");
+                    limpiarTabla();
+                    Consultar();
+                }else{
+                    String sql ="delete from cliente where idCliente = '"+idc+"'";
+                    conet = con1.getConnection();
+                    st = conet.createStatement();
+                    st.executeUpdate(sql);
+                    JOptionPane.showMessageDialog(this, "Cliente Eliminado");
+                    limpiarTabla();
+                }
+            } catch (Exception e) {
             }
-        } catch (Exception e) {
+            Consultar();
+            
         }
+        
+            
     }
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
