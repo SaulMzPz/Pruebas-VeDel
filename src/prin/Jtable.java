@@ -10,6 +10,7 @@ package prin;
 import config.Conexion;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
@@ -184,22 +185,15 @@ public class Jtable extends javax.swing.JFrame {
 
             },
             new String [] {
-                "id", "nombre", "edad", "fecha"
+                "nombre", "edad"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class
-            };
-            boolean[] canEdit = new boolean [] {
-                false, true, true, true
+                java.lang.String.class, java.lang.Integer.class
             };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
-            }
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
             }
         });
         tblTabla.setRowHeight(40);
@@ -364,23 +358,23 @@ public class Jtable extends javax.swing.JFrame {
     }
     
     void Consultar (){ 
-        String sql = "select * from cliente";
+        String sql = "select * from vedel_db.clientes";
         
         try {
             conet = con1.getConnection();
             st = conet.createStatement();
             rs = st.executeQuery(sql);
-            Object[] row = new Object[4];
+            Object[] row = new Object[2];
             modelo = (DefaultTableModel) tblTabla.getModel();
             while(rs.next()){
-                row [0] = rs.getInt("idCliente");
-                row [1] = rs.getString("nombre");
-                row [2] = rs.getInt("edad");
-                row [3] = rs.getString("fecha");
+                
+                row [0] = rs.getString("nombre");
+                row [1] = rs.getInt("edad");
+                
                 modelo.addRow(row);
                 tblTabla.setModel(modelo);
             }
-        }catch (Exception e){
+        }catch (SQLException e){
         }
     }
     
